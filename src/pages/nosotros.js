@@ -4,11 +4,11 @@ import Layout from "@/components/Layout";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function Home() {
+export default function Nosotros() {
   return (
     <Layout>
       <div>
-        <h1>Bienvenido a la Página de Inicio</h1>
+        <h1>Acerca de Nosotros</h1>
       </div>
     </Layout>
   );

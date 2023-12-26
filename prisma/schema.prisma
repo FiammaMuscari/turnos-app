@@ -1,17 +1,16 @@
-generator client {
-  provider = "prisma-client-js"
-}
-
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
+// schema.prisma
 
 model User {
-  id          Int          @id @default(autoincrement())
-  email       String       @unique
-  name        String?
+  id           Int           @id @default(autoincrement())
+  email        String        @unique
+  name         String?
   appointments Appointment[]
+}
+
+model Service {
+  id    Int      @id @default(autoincrement())
+  name  String
+  price Float
 }
 
 model Appointment {
@@ -21,4 +20,6 @@ model Appointment {
   date         DateTime
   time         String
   is_available Boolean  @default(true)
+  service_id   Int?
+  service      Service? @relation(fields: [service_id], references: [id])
 }
