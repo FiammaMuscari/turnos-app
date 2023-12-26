@@ -1,11 +1,15 @@
+// Importa las bibliotecas necesarias y los componentes
 import React, { useState, useEffect } from "react";
 import ServicesList from "@/components/ServicesList";
 import Layout from "@/components/Layout";
 
+// Definir el componente Home
 const Home = () => {
+  // Estados para los servicios seleccionados y el precio total
   const [selectedServices, setSelectedServices] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
 
+  // Función para manejar la selección de servicios
   const handleServiceSelection = (selectedService) => {
     const isServiceSelected = selectedServices.some(
       (service) => service.id === selectedService.id
@@ -22,6 +26,7 @@ const Home = () => {
     }
   };
 
+  // Efecto para actualizar el precio total cuando cambian los servicios seleccionados
   useEffect(() => {
     const total = selectedServices.reduce(
       (accumulator, service) => accumulator + service.price,
@@ -30,21 +35,30 @@ const Home = () => {
     setTotalPrice(total);
   }, [selectedServices]);
 
+  // Renderiza el componente
   return (
     <Layout>
-      <h1>Bienvenido a la Página de Inicio</h1>
+      <h1 className="mb-3">Hola, ¿Qué deseas hacerte?</h1>
       <ServicesList handleServiceSelection={handleServiceSelection} />
-      <div>
-        <h2>Servicios Seleccionados</h2>
-        <ul>
-          {selectedServices.map((service) => (
-            <li key={service.id}>{service.name}</li>
-          ))}
-        </ul>
-        <p>Total: ${totalPrice}</p>
+      <div className="max-w-80">
+        <h2>A pagar:</h2>
+
+        {selectedServices.length > 0 ? (
+          selectedServices.map((service) => (
+            <ul key={service.id} className="flex justify-end">
+              <li>{service.name}</li>
+              <li>.......... ${service.price}</li>
+            </ul>
+          ))
+        ) : (
+          <p>No hay servicios seleccionados</p>
+        )}
+
+        <p>Total: $ {totalPrice}</p>
       </div>
     </Layout>
   );
 };
 
+// Exporta el componente Home
 export default Home;

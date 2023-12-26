@@ -14,7 +14,7 @@ const ServicesList = ({ handleServiceSelection }) => {
   }, []);
 
   return (
-    <ul className={styles.servicesList}>
+    <ul>
       {services.map((service) => (
         <li key={service.id} className="serviceCard">
           <label className="serviceLabel">
