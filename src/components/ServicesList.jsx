@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
+import styles from "globals";
 
 const ServicesList = ({ handleServiceSelection }) => {
   const [services, setServices] = useState([]);
@@ -12,16 +14,27 @@ const ServicesList = ({ handleServiceSelection }) => {
   }, []);
 
   return (
-    <ul>
+    <ul className={styles.servicesList}>
       {services.map((service) => (
-        <li key={service.id}>
-          <label>
+        <li key={service.id} className="serviceCard">
+          <label className="serviceLabel">
             <input
               type="checkbox"
               value={service.id}
               onChange={() => handleServiceSelection(service)}
             />
-            {service.name} - ${service.price}
+            <div className="serviceInfo">
+              <h3 className="serviceName">{service.name}</h3>
+              <p className="servicePrice">${service.price}</p>
+            </div>
+            <div className="serviceImage">
+              <Image
+                src={`/images/services/${service.id}.webp`}
+                alt={service.name}
+                width={100}
+                height={100}
+              />
+            </div>
           </label>
         </li>
       ))}

@@ -25,3 +25,60 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+/* ServicesList.module.css */
+.servicesList {
+  list-style: none;
+  padding: 0;
+}
+
+.serviceCard {
+  background-color: rgba(88, 21, 102, 0.226);
+  border: 3px solid #ddd;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  padding: 10px;
+  display: flex;
+  max-width: 400px;
+}
+
+.serviceLabel {
+  display: flex;
+  width: 100%;
+}
+
+.serviceInfo {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  padding-left: 1em;
+}
+
+.serviceName {
+  font-size: 18px;
+  margin: 0;
+}
+
+.servicePrice {
+  font-size: 16px;
+  margin: 0;
+}
+
+.serviceImage {
+  flex-shrink: 0;
+  width: 100px;
+  height: 70px;
+  margin-left: 10px;
+  position: relative;
+}
+
+/* Estilos para hacer la imagen blanco y negro */
+.serviceImage img {
+  filter: grayscale(70%);
+  border: 3px solid #ddd;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Ajusta la imagen para que cubra completamente el contenedor */
+  border-radius: 30000000px; /* Ajusta según tus preferencias */
+}
