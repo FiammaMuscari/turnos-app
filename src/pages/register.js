@@ -1,61 +1,120 @@
 import Layout from "@/components/Layout";
-import React, { useState } from "react";
+import axios from "axios";
+import { useRef, useState } from "react";
 
-const Register = ({ onRegister }) => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+export default function Register({ global, setGlobal }) {
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(false);
+  const usernameRef = useRef();
+  const emailRef = useRef();
+  const passwordRef = useRef();
 
-  const handleRegister = () => {
-    // Aquí deberías realizar la lógica de registro del lado del servidor
-    // Puedes hacer una solicitud a tu API para crear un nuevo usuario
-
-    // Simulación de registro (sustituye esto con la lógica real)
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     const newUser = {
-      name,
-      email,
-      password,
+      username: usernameRef.current.value,
+      email: emailRef.current.value,
+      password: passwordRef.current.value,
     };
 
-    // Llamar a la función de registro del componente padre (onRegister)
-    onRegister(newUser);
+    try {
+      await axios.post("/api/users/register", newUser);
+      setError(false);
+      setSuccess(true);
+    } catch (err) {
+      setError(true);
+    }
+
+    if (!success) {
+      ({ currentUsername: newUser.username });
+      return;
+    }
+  };
+
+  const [passwordShown, setPasswordShown] = useState(false);
+
+  const togglePassword = () => {
+    setPasswordShown(!passwordShown);
   };
 
   return (
     <Layout>
-      <div>
-        <h2>Registrarse</h2>
-        <label>
-          Nombre:
-          <input
-            className="text-black"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </label>
-        <label>
-          Email:
-          <input
-            className="text-black"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </label>
-        <label>
-          Contraseña:
-          <input
-            className="text-black"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </label>
-        <button onClick={handleRegister}>Registrarse</button>
+      <div className="registerContainer">
+        <form onSubmit={handleSubmit} style={{ height: "150px" }}>
+          <input autoFocus placeholder="usuario" ref={usernameRef} />
+          <input type="email" placeholder="email" ref={emailRef} />
+          <div
+            style={{
+              width: "100%",
+              backgroundColor: "#dfdfdf",
+              borderRadius: "0.25rem",
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <input
+              type={passwordShown ? "text" : "password"}
+              min="6"
+              placeholder="contraseña"
+              ref={passwordRef}
+              style={{ position: "relative", border: "none" }}
+            />
+            <button
+              onClick={togglePassword}
+              style={{
+                all: "unset",
+                cursor: "pointer",
+                right: 0,
+                bottom: 0,
+                border: "none",
+                paddingRight: "0.25rem",
+                marginTop: "0.15rem",
+              }}
+            >
+              {passwordShown ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="icon icon-tabler icon-tabler-eye"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="#2c3e50"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  {/* ... (icon paths) ... */}
+                </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="icon icon-tabler icon-tabler-eye-off"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="#2c3e50"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  {/* ... (icon paths) ... */}
+                </svg>
+              )}
+            </button>
+          </div>
+          <button className="registerBtn" type="submit">
+            Registrarme
+          </button>
+          {success && (
+            <span className="success">
+              Registro exitoso, ingresa a tu cuenta!
+            </span>
+          )}
+          {error && <span className="failure">Error al registrar!</span>}
+        </form>
       </div>
     </Layout>
   );
-};
-
-export default Register;
+}

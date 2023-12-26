@@ -1,52 +1,47 @@
 import Layout from "@/components/Layout";
-import React, { useState } from "react";
+import axios from "axios";
+import { useRef, useState } from "react";
 
-const Login = ({ onLogin }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+export default function Login({ setShowLogin, setCurrentUsername, global }) {
+  const [error, setError] = useState(false);
+  const usernameRef = useRef();
+  const passwordRef = useRef();
 
-  const handleLogin = () => {
-    // Aquí deberías realizar la lógica de autenticación del lado del servidor
-    // Puedes hacer una solicitud a tu API para verificar las credenciales
-
-    // Simulación de autenticación (sustituye esto con la lógica real)
-    const isAuthenticated = true;
-
-    if (isAuthenticated) {
-      // Llamar a la función de inicio de sesión del componente padre (onLogin)
-      onLogin(email);
-    } else {
-      // Manejar el caso en el que la autenticación falla
-      alert("Credenciales incorrectas. Por favor, inténtalo de nuevo.");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const user = {
+      username: usernameRef.current.value,
+      password: passwordRef.current.value,
+    };
+    try {
+      const res = await axios.post("/api/users/login", user);
+      setCurrentUsername({ ...global, currentUsername: res.data.username });
+      localStorage.setItem("user", res.data.username);
+      setShowLogin(false);
+    } catch (err) {
+      setError(true);
     }
   };
 
   return (
     <Layout>
-      <div>
-        <h2>Iniciar Sesión</h2>
-        <label>
-          Email:
+      <div className="loginContainer">
+        <form onSubmit={handleSubmit} style={{ height: "150px" }}>
+          <input autoFocus placeholder="usuario" ref={usernameRef} />
           <input
-            className="text-black"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </label>
-        <label>
-          Contraseña:
-          <input
-            className="text-black"
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            min="6"
+            placeholder="contraseña"
+            ref={passwordRef}
           />
-        </label>
-        <button onClick={handleLogin}>Iniciar Sesión</button>
+          <button className="loginBtn" type="submit">
+            Ingresar
+          </button>
+          {error && (
+            <span className="failure">Usuario o contrañeña incorrecta!</span>
+          )}
+        </form>
       </div>
     </Layout>
   );
-};
-
-export default Login;
+}
