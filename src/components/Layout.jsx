@@ -13,6 +13,12 @@ function Layout({ children }) {
           <li>
             <Link href="/nosotros">Nosotros</Link>
           </li>
+          <li>
+            <Link href="/register">register</Link>
+          </li>
+          <li>
+            <Link href="/login">login</Link>
+          </li>
         </ul>
       </nav>
       <main className="flex-1 p-4">{children}</main>
