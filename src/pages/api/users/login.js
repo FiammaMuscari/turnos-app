@@ -1,33 +1,40 @@
 import { PrismaClient } from "@prisma/client";
 import { compare } from "bcrypt";
 
-export default async function logearse(req, res) {
+export default async function login(req, res) {
   const prisma = new PrismaClient();
-  try {
-    //find user
-    const foundUser = await prisma.users.findUnique({
-      where: { username: req.body.username },
-    });
-    console.log({ foundUser });
 
-    if (foundUser) {
-      //if foundUser: compare entered password to stored/foundUser password.
-      const validPassword = await compare(
-        req.body.password,
-        foundUser.password
-      );
-      if (validPassword) {
-        //if both passwords match:
-        res.status(200).json({ username: foundUser.username });
+  try {
+    if (req.method === "POST") {
+      // Buscar usuario por nombre de usuario
+      const foundUser = await prisma.user.findUnique({
+        where: { username: req.body.username },
+      });
+
+      if (foundUser) {
+        // Comparar contraseñas
+        const validPassword = await compare(
+          req.body.password,
+          foundUser.password
+        );
+
+        if (validPassword) {
+          res
+            .status(200)
+            .json({ username: foundUser.username, userId: foundUser.id });
+        } else {
+          res.status(400).json({ err: "1" });
+        }
       } else {
-        //if both passwords dont match:
-        res.status(400).json({ err: "Usuario o contraseña incorrecta" });
+        res.status(400).json({ err: "2" });
       }
     } else {
-      //if !foundUser:
-      res.status(400).json({ err: "Usuario o contraseña incorrecta" });
+      res.status(405).json({ error: "Método no permitido" });
     }
   } catch (error) {
-    res.status(500).json({ error, test: "test" });
+    console.error("Error durante el inicio de sesión:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  } finally {
+    await prisma.$disconnect();
   }
 }

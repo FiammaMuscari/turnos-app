@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from "react";
 import ServicesList from "@/components/ServicesList";
 import Layout from "@/components/Layout";
-
+import { useRouter } from "next/router";
+import axios from "axios";
 // Definir el componente Home
 const Home = () => {
   // Estados para los servicios seleccionados y el precio total
@@ -35,7 +36,6 @@ const Home = () => {
     setTotalPrice(total);
   }, [selectedServices]);
 
-  // Renderiza el componente
   return (
     <Layout>
       <h1 className="mb-3">Hola, ¿Qué deseas hacerte?</h1>
