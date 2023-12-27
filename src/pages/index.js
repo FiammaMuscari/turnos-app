@@ -4,6 +4,7 @@ import ServicesList from "@/components/ServicesList";
 import Layout from "@/components/Layout";
 import { useRouter } from "next/router";
 import axios from "axios";
+import { Calendar } from "@/components/ui/calendar";
 // Definir el componente Home
 const Home = () => {
   // Estados para los servicios seleccionados y el precio total
@@ -36,6 +37,10 @@ const Home = () => {
     setTotalPrice(total);
   }, [selectedServices]);
 
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    console.log("localStorage:", localStorage);
+  }, []);
   return (
     <Layout>
       <h1 className="mb-3">Hola, ¿Qué deseas hacerte?</h1>
@@ -56,6 +61,7 @@ const Home = () => {
 
         <p>Total: $ {totalPrice}</p>
       </div>
+      <Calendar />
     </Layout>
   );
 };
