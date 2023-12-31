@@ -4,13 +4,13 @@ import ServicesList from "@/components/ServicesList";
 import Layout from "@/components/Layout";
 import { useRouter } from "next/router";
 import axios from "axios";
-import { Calendar } from "@/components/ui/calendar";
+import { DatePickerForm } from "@/components/DatePickerForm";
 // Definir el componente Home
 const Home = () => {
   // Estados para los servicios seleccionados y el precio total
   const [selectedServices, setSelectedServices] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
-
+  const [selectedDate, setSelectedDate] = useState(null);
   // Función para manejar la selección de servicios
   const handleServiceSelection = (selectedService) => {
     const isServiceSelected = selectedServices.some(
@@ -37,12 +37,49 @@ const Home = () => {
     setTotalPrice(total);
   }, [selectedServices]);
 
+  //setear globales
+
+  const [global, setGlobal] = useState({
+    currentUsername: null,
+    date: null,
+    time: "",
+    is_available: true,
+    service_id: null,
+  });
+
+  //user login
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    console.log("localStorage:", localStorage);
+    const user = localStorage.getItem("user");
+    if (!user) return;
+    setGlobal({ ...global, currentUsername: user });
+    //eslint-disable-next-line
   }, []);
+  //user logout
+  const handleLogout = () => {
+    setGlobal({ ...global, currentUsername: null });
+    localStorage.removeItem("user");
+    console.log("sesion cerrada exitosamente");
+  };
+
+  //create appoinment
+  //   const handleSubmit = async () => {
+  //     const newTurno = {
+  //       username: global.currentUsername,
+  //       date: global.date,
+  //       time: global.time,
+  //       is_available: global.available,
+  //       service_id: global.service,
+  //     }
+
+  //     const res = await axios.post("https://robosmdq.site/api/appointment/create", newTurno)
+  //     setGlobal({ ...global, newTurno: null })
+
+  //     if(res.status === 200) {
+  //       router.reload()
+  //     } ??? no se ni idea, veré
+
   return (
-    <Layout>
+    <Layout handleLogout={handleLogout}>
       <h1 className="mb-3">Hola, ¿Qué deseas hacerte?</h1>
       <ServicesList handleServiceSelection={handleServiceSelection} />
       <div className="max-w-80">
@@ -61,7 +98,7 @@ const Home = () => {
 
         <p>Total: $ {totalPrice}</p>
       </div>
-      <Calendar />
+      <DatePickerForm />
     </Layout>
   );
 };

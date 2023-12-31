@@ -17,6 +17,7 @@ export default function Login() {
     try {
       const res = await axios.post("/api/users/login", user);
       localStorage.setItem("user", res.data.username);
+      console.log(user);
       // Lógica adicional relacionada con el éxito del inicio de sesión
     } catch (err) {
       setError(true);

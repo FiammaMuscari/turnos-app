@@ -32,6 +32,14 @@ function Layout({ children, loggedInUser, handleLogout }) {
               </li>
             </>
           )}
+          <>
+            <li>
+              {" "}
+              <button className="button logout" onClick={handleLogout}>
+                Salir
+              </button>
+            </li>
+          </>
         </ul>
       </nav>
       <main className="flex-1 p-4">{children}</main>
