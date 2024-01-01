@@ -1,7 +1,7 @@
 // Importa las bibliotecas necesarias y los componentes
 import React, { useState, useEffect } from "react";
 import ServicesList from "@/components/ServicesList";
-import Layout from "@/components/Layout";
+
 import { useRouter } from "next/router";
 import axios from "axios";
 import { DatePickerForm } from "@/components/DatePickerForm";
@@ -79,7 +79,7 @@ const Home = () => {
   //     } ??? no se ni idea, veré
 
   return (
-    <Layout handleLogout={handleLogout}>
+    <>
       <h1 className="mb-3">Hola, ¿Qué deseas hacerte?</h1>
       <ServicesList handleServiceSelection={handleServiceSelection} />
       <div className="max-w-80">
@@ -99,7 +99,7 @@ const Home = () => {
         <p>Total: $ {totalPrice}</p>
       </div>
       <DatePickerForm />
-    </Layout>
+    </>
   );
 };
 

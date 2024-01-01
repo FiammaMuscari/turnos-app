@@ -1,48 +1,18 @@
-import React from "react";
-
-import Link from "next/link";
+// Layout.js
+import React, { useMemo } from "react";
+import Navbar from "./Navbar";
+import Head from "next/head";
 
 function Layout({ children, loggedInUser, handleLogout }) {
   return (
     <div className="min-h-screen flex flex-col">
-      <nav className="bg-gray-800 p-4 text-white">
-        <ul className="flex space-x-4">
-          <li>
-            <Link href="/">Inicio</Link>
-          </li>
-          <li>
-            <Link href="/nosotros">Nosotros</Link>
-          </li>
-          {loggedInUser ? (
-            <>
-              <li>
-                <p>Bienvenido, {loggedInUser}!</p>
-              </li>
-              <li>
-                <button onClick={handleLogout}>Cerrar sesión</button>
-              </li>
-            </>
-          ) : (
-            <>
-              <li>
-                <Link href="/login">Iniciar sesión</Link>
-              </li>
-              <li>
-                <Link href="/register">Registrarse</Link>
-              </li>
-            </>
-          )}
-          <>
-            <li>
-              {" "}
-              <button className="button logout" onClick={handleLogout}>
-                Salir
-              </button>
-            </li>
-          </>
-        </ul>
-      </nav>
-      <main className="flex-1 p-4">{children}</main>
+      <Head>
+        <title>turnos</title>
+      </Head>
+      <main className="flex-1 p-4">
+        <Navbar loggedInUser={loggedInUser} handleLogout={handleLogout} />
+        {children}
+      </main>
     </div>
   );
 }

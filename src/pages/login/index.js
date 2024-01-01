@@ -1,4 +1,3 @@
-import Layout from "@/components/Layout";
 import axios from "axios";
 import { useRef, useState } from "react";
 
@@ -17,7 +16,7 @@ export default function Login() {
     try {
       const res = await axios.post("/api/users/login", user);
       localStorage.setItem("user", res.data.username);
-      console.log(user);
+      console.log("Usuario logeado correctamente:", res.data.username);
       // Lógica adicional relacionada con el éxito del inicio de sesión
     } catch (err) {
       setError(true);
@@ -25,24 +24,22 @@ export default function Login() {
   };
 
   return (
-    <Layout>
-      <div className="loginContainer">
-        <form onSubmit={handleSubmit} style={{ height: "150px" }}>
-          <input autoFocus placeholder="usuario" ref={usernameRef} />
-          <input
-            type="password"
-            minLength="6"
-            placeholder="contraseña"
-            ref={passwordRef}
-          />
-          <button className="loginBtn" type="submit">
-            Ingresar
-          </button>
-          {error && (
-            <span className="failure">Usuario o contraseña incorrecta!</span>
-          )}
-        </form>
-      </div>
-    </Layout>
+    <div className="loginContainer">
+      <form onSubmit={handleSubmit} style={{ height: "150px" }}>
+        <input autoFocus placeholder="usuario" ref={usernameRef} />
+        <input
+          type="password"
+          minLength="6"
+          placeholder="contraseña"
+          ref={passwordRef}
+        />
+        <button className="loginBtn" type="submit">
+          Ingresar
+        </button>
+        {error && (
+          <span className="failure">Usuario o contraseña incorrecta!</span>
+        )}
+      </form>
+    </div>
   );
 }
