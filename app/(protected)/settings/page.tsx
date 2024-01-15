@@ -74,7 +74,7 @@ const SettingsPage = () => {
         <p className="text-2xl font-semibold text-center">⚙️ Settings</p>
       </CardHeader>
       <CardContent>
-        <Form {...form}>
+        {/* <Form {...form}>
           <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
             <div className="space-y-4">
               <FormField
@@ -124,7 +124,7 @@ const SettingsPage = () => {
               Save
             </Button>
           </form>
-        </Form>
+        </Form> */}
       </CardContent>
     </Card>
   );
