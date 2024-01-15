@@ -78,3 +78,18 @@ export const ServiceSchema = z.object({
     message: "Minimum 4 characters required",
   }),
 });
+
+export const AppointmentSchema = z.object({
+  userId: z.string(),
+  date: z.date(),
+  time: z.string(),
+  isAvailable: z.boolean().default(true),
+  serviceId: z.optional(z.number()),
+  service: z
+    .object({
+      id: z.number(),
+      name: z.string(),
+      price: z.string(),
+    })
+    .optional(),
+});
