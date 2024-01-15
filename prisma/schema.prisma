@@ -1,36 +1,102 @@
-// schema.prisma
+// prisma/schema.prisma
+datasource db {
+  provider  = "postgresql"
+  url  	    = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
 
 generator client {
   provider = "prisma-client-js"
 }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+enum UserRole {
+  ADMIN
+  USER
 }
 
 model User {
-  id           Int           @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  username  String   @unique
-  appointments Appointment[]
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          UserRole @default(USER)
+  accounts      Account[]
+  isTwoFactorEnabled Boolean @default(false)
+  twoFactorConfirmation TwoFactorConfirmation?
+  appointments  Appointment[] 
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  @db.Text
+  access_token       String?  @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?  @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model VerificationToken {
+  id String @id @default(cuid())
+  email String
+  token String @unique
+  expires DateTime
+
+  @@unique([email, token])
+}
+
+model PasswordResetToken {
+  id String @id @default(cuid())
+  email String
+  token String @unique
+  expires DateTime
+
+  @@unique([email, token])
+}
+
+model TwoFactorToken {
+  id String @id @default(cuid())
+  email String
+  token String @unique
+  expires DateTime
+
+  @@unique([email, token])
+}
+
+model TwoFactorConfirmation {
+  id String @id @default(cuid())
+
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId])
+}
+
+model Appointment {
+  id           Int      @id @default(autoincrement())
+  userId       String  
+  user         User     @relation(fields: [userId], references: [id])
+  date         DateTime
+  time         String
+  isAvailable  Boolean  @default(true)
+  serviceId    Int?
+  service      Service? @relation(fields: [serviceId], references: [id])
 }
 
 model Service {
   id          Int         @id @default(autoincrement())
   name        String
-  price       Float
-  appointments Appointment[] // Agrega esta línea para establecer la relación opuesta
-}
-
-model Appointment {
-  id           Int      @id @default(autoincrement())
-  user_id      Int
-  user         User     @relation(fields: [user_id], references: [id])
-  date         DateTime
-  time         String
-  is_available Boolean  @default(true)
-  service_id   Int?
-  service      Service? @relation(fields: [service_id], references: [id])
+  price       String
+  appointments Appointment[]
 }
