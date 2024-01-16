@@ -5,6 +5,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTransition, useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { UserRole } from "@prisma/client";
 
 import {
   Form,
@@ -12,31 +14,28 @@ import {
   FormControl,
   FormItem,
   FormLabel,
-  FormDescription,
   FormMessage,
 } from "@/components/ui/form";
-
 import { Input } from "@/components/ui/input";
-
 import { services, getAllServices, deleteService } from "@/actions/services";
 import { ServiceSchema } from "@/schemas";
 import { useCurrentUser } from "@/hooks/use-current-user";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 const AdminPage = () => {
   const user = useCurrentUser();
+  const { data: session } = useSession();
+  const router = useRouter();
 
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | undefined>();
   const [success, setSuccess] = useState<string | undefined>();
   const { update } = useSession();
   const [isPending, startTransition] = useTransition();
-
   const [serviceList, setServiceList] = useState<
     { id: number; name: string; price: string }[]
   >([]);
-
   const form = useForm<z.infer<typeof ServiceSchema>>({
     resolver: zodResolver(ServiceSchema),
     defaultValues: {
@@ -44,6 +43,23 @@ const AdminPage = () => {
       price: undefined,
     },
   });
+
+  useEffect(() => {
+    const checkAdminRoleAndRedirect = () => {
+      if (user && session && session.user.role !== UserRole.ADMIN) {
+        router.push("/");
+      } else {
+        setIsLoading(false);
+        loadServices();
+      }
+    };
+
+    checkAdminRoleAndRedirect();
+  }, [user, session, router]);
+
+  if (isLoading) {
+    return <h1>Loading...</h1>;
+  }
 
   const onSubmit = (values: z.infer<typeof ServiceSchema>) => {
     startTransition(() => {
@@ -59,7 +75,7 @@ const AdminPage = () => {
             setSuccess(data.success);
           }
         })
-        .catch(() => setError("Something went wrong!"));
+        .catch(() => setError("Algo salió mal"));
     });
   };
 
@@ -76,7 +92,7 @@ const AdminPage = () => {
             setSuccess(data.success);
           }
         })
-        .catch(() => setError("Something went wrong!"));
+        .catch(() => setError("Algo salió mal"));
     });
   };
 
@@ -86,17 +102,14 @@ const AdminPage = () => {
     if (result.success) {
       setServiceList(result?.data);
     } else {
-      console.error("Error fetching services:", result.error);
+      console.error("Error al obtener servicios:", result.error);
     }
   };
-
-  useEffect(() => {
-    loadServices();
-  }, []);
 
   const capitalizeFirstLetter = (input: string): string => {
     return input.charAt(0).toUpperCase() + input.slice(1);
   };
+
   return (
     <Card className="w-[600px]">
       <CardHeader>
@@ -142,7 +155,7 @@ const AdminPage = () => {
               />
             </div>
             <Button disabled={isPending} type="submit">
-              Save
+              Guardar
             </Button>
           </form>
         </Form>
@@ -156,7 +169,7 @@ const AdminPage = () => {
               <h1>${service.price}</h1>
             </div>
             <Button onClick={() => onDeleteServiceClick(service.id)}>
-              Delete
+              Eliminar
             </Button>
           </div>
         ))}
