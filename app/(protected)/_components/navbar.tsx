@@ -25,17 +25,14 @@ export const Navbar = () => {
   return (
     <nav className="bg-secondary flex justify-between items-center p-4 rounded-xl shadow-sm mb-4">
       <div className="flex gap-x-2">
-        <Button
-          asChild
-          variant={pathname === "/client" ? "default" : "outline"}
-        >
-          <Link href="/client">Sacar Turno</Link>
+        <Button asChild variant={pathname === "/turno" ? "default" : "outline"}>
+          <Link href="/turno">Sacar Turno</Link>
         </Button>
         <Button
           asChild
-          variant={pathname === "/settings" ? "default" : "outline"}
+          variant={pathname === "/mis-turnos" ? "default" : "outline"}
         >
-          <Link href="/settings">Mis turnos</Link>
+          <Link href="/mis-turnos">Mis turnos</Link>
         </Button>
         {userIsAuthenticated && userIsAdmin && (
           <Button
