@@ -43,6 +43,15 @@ const AdminPage = () => {
       price: undefined,
     },
   });
+  const loadServices = async () => {
+    const result = await getAllServices();
+
+    if (result.success) {
+      setServiceList(result?.data);
+    } else {
+      console.error("Error al obtener servicios:", result.error);
+    }
+  };
 
   useEffect(() => {
     const checkAdminRoleAndRedirect = () => {
@@ -94,16 +103,6 @@ const AdminPage = () => {
         })
         .catch(() => setError("Algo salió mal"));
     });
-  };
-
-  const loadServices = async () => {
-    const result = await getAllServices();
-
-    if (result.success) {
-      setServiceList(result?.data);
-    } else {
-      console.error("Error al obtener servicios:", result.error);
-    }
   };
 
   const capitalizeFirstLetter = (input: string): string => {
