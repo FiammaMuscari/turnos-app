@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import { getAllServices } from "@/actions/services";
 
-interface Service {
+type Service = {
   id: number;
   name: string;
   price: string;
-}
+};
 
 interface ServicesListProps {
   handleServiceSelection: (service: Service) => void;
@@ -14,23 +15,28 @@ interface ServicesListProps {
 const ServicesList: React.FC<ServicesListProps> = ({
   handleServiceSelection,
 }) => {
-  const [services, setServices] = useState<Service[]>([]);
+  const [serviceList, setServiceList] = useState<
+    { id: number; name: string; price: string }[]
+  >([]);
+  const loadServices = async () => {
+    const result = await getAllServices();
 
+    if (result.success) {
+      setServiceList(result?.data);
+    } else {
+      console.error("Error al obtener servicios:", result.error);
+    }
+  };
   useEffect(() => {
-    // Llamada a la API para obtener los servicios
-    fetch("/api/services")
-      .then((response) => response.json())
-      .then((data) => setServices(data))
-      .catch((error) => console.error("Error al obtener servicios:", error));
+    loadServices();
   }, []);
-
   return (
     <div>
-      {services.length === 0 ? (
-        <div>No hay servicios disponibles en este momento.</div>
+      {serviceList.length === 0 ? (
+        <div>Cargando...</div>
       ) : (
-        <ul>
-          {services.map((service) => (
+        <ul className="flex gap-[1em]">
+          {serviceList.map((service) => (
             <li key={service.id} className="serviceCard">
               <label className="serviceLabel">
                 <input
@@ -41,14 +47,6 @@ const ServicesList: React.FC<ServicesListProps> = ({
                 <div className="serviceInfo">
                   <h3 className="serviceName">{service.name}</h3>
                   <p className="servicePrice">${service.price}</p>
-                </div>
-                <div className="serviceImage">
-                  <Image
-                    src={`/images/services/${service.id}.webp`}
-                    alt={service.name}
-                    width={100}
-                    height={100}
-                  />
                 </div>
               </label>
             </li>

@@ -28,12 +28,12 @@ export const services = async (values: z.infer<typeof ServiceSchema>) => {
   }
 };
 
-export const deleteService = async (serviceId: number) => {
+export const deleteService = async (serviceName: string) => {
   try {
     // Eliminar servicio
-    const deletedService = await db.service.delete({
+    const deletedService = await db.service.deleteMany({
       where: {
-        id: serviceId,
+        name: serviceName,
       },
     });
 

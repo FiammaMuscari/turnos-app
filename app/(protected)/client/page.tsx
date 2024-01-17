@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ServicesList from "@/components/ServicesList";
 import { DatePickerForm } from "@/components/DatePickerForm";
 
@@ -31,6 +31,15 @@ const ClientPage: React.FC = () => {
       setSelectedServices(updatedServices);
     }
   };
+
+  // Calcular el precio total cuando los servicios seleccionados cambian
+  useEffect(() => {
+    const total = selectedServices.reduce(
+      (accumulator, service) => accumulator + parseFloat(service.price),
+      0
+    );
+    setTotalPrice(total);
+  }, [selectedServices]);
 
   return (
     <>

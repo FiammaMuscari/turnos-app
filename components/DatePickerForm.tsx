@@ -26,7 +26,7 @@ import { toast } from "@/components/ui/use-toast";
 // Declaration of FormSchema
 const FormSchema = z.object({
   dob: z.date({
-    required_error: "A date of birth is required.",
+    required_error: "Fecha requerida",
   }),
 });
 
@@ -116,7 +116,7 @@ export function DatePickerForm() {
           name="dob"
           render={({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Date of birth</FormLabel>
+              <FormLabel>Fecha de turno</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -130,7 +130,7 @@ export function DatePickerForm() {
                       {field.value ? (
                         format(field.value, "PPP")
                       ) : (
-                        <span>Pick a date</span>
+                        <span>Elige el día</span>
                       )}
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -154,9 +154,6 @@ export function DatePickerForm() {
                     mode="single"
                     selected={field.value}
                     onSelect={field.onChange}
-                    disabled={(date) =>
-                      date > new Date() || date < new Date("1900-01-01")
-                    }
                     initialFocus
                   />
                 </PopoverContent>

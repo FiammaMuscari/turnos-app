@@ -88,10 +88,14 @@ const AdminPage = () => {
     });
   };
 
-  const onDeleteServiceClick = async (serviceId: number) => {
+  const onDeleteServiceClick = async (serviceName: string) => {
     startTransition(() => {
-      deleteService(serviceId)
+      console.log("Deleting service with name:", serviceName);
+
+      deleteService(serviceName)
         .then((data) => {
+          console.log("Delete service response:", data);
+
           if (data.error) {
             setError(data.error);
           }
@@ -110,7 +114,7 @@ const AdminPage = () => {
   };
 
   return (
-    <Card className="w-[600px]">
+    <Card>
       <CardHeader>
         <p className="text-2xl font-semibold text-center">🔑 Admin</p>
       </CardHeader>
@@ -163,11 +167,11 @@ const AdminPage = () => {
             key={service.id}
             className="flex justify-between items-center border-b py-2"
           >
-            <div className="flex w-full justify-between px-4">
+            <div className="flex w-full justify-between px-4 gap-2">
               <h1>{capitalizeFirstLetter(service.name)}</h1>
               <h1>${service.price}</h1>
             </div>
-            <Button onClick={() => onDeleteServiceClick(service.id)}>
+            <Button onClick={() => onDeleteServiceClick(service.name)}>
               Eliminar
             </Button>
           </div>

@@ -96,7 +96,7 @@ model Appointment {
 
 model Service {
   id          Int         @id @default(autoincrement())
-  name        String
+  name        String  @unique
   price       String
   appointments Appointment[]
 }
