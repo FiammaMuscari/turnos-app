@@ -43,9 +43,12 @@ const ClientPage: React.FC = () => {
 
   return (
     <>
-      <h1 className="mb-3">Hola, ¿Qué deseas hacerte?</h1>
-      <ServicesList handleServiceSelection={handleServiceSelection} />
-      <div className="max-w-80">
+      <h1 className="mb-3 text-white">Hola, ¿Qué deseas hacerte?</h1>
+      <ServicesList
+        handleServiceSelection={handleServiceSelection}
+        selectedServices={selectedServices}
+      />
+      <div className="max-w-80 bg-white rounded-sm p-4 m-3">
         <h2>A pagar:</h2>
 
         {selectedServices.length > 0 ? (
@@ -59,7 +62,7 @@ const ClientPage: React.FC = () => {
           <div>No hay servicios seleccionados</div>
         )}
 
-        <div>Total: $ {totalPrice}</div>
+        <div className="text-blue-400">Total: $ {totalPrice}</div>
       </div>
       <DatePickerForm />
     </>

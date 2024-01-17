@@ -110,7 +110,10 @@ export function DatePickerForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-8 text-black bg-white p-4 rounded-md"
+      >
         <FormField
           control={form.control}
           name="dob"
@@ -159,7 +162,7 @@ export function DatePickerForm() {
                 </PopoverContent>
               </Popover>
               <FormDescription>
-                Elige el día para sacar el turno
+                Elige el horario
                 <div className="grid grid-cols-2 gap-4">
                   {generateTurnos().map((turno, index) => (
                     <div

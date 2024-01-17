@@ -23,7 +23,7 @@ export const Navbar = () => {
   const userIsAdmin = role === UserRole.ADMIN;
   const userIsAuthenticated = !!user;
   return (
-    <nav className="bg-secondary flex justify-between items-center p-4 rounded-xl shadow-sm mb-4">
+    <nav className="bg-secondary flex justify-between items-center p-4 rounded-xl shadow-sm mb-4 px-4">
       <div className="flex gap-x-2">
         <Button asChild variant={pathname === "/turno" ? "default" : "outline"}>
           <Link href="/turno">Sacar Turno</Link>
