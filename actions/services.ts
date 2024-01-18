@@ -1,6 +1,6 @@
 // services.ts
-
 "use server";
+import cuid from "cuid";
 
 import * as z from "zod";
 
@@ -14,8 +14,10 @@ export const services = async (values: z.infer<typeof ServiceSchema>) => {
     if (!validatedFields.success) {
       return { error: "Invalid fields!" };
     }
+
     const newService = await db.service.create({
       data: {
+        id: cuid(),
         name: values.name,
         price: values.price,
       },
@@ -53,7 +55,6 @@ export const getAllServices = async () => {
     const services = await db.service.findMany();
     const validatedServices = services.map((service, index) => ({
       ...service,
-      id: index + 1,
     }));
 
     return { success: true, data: validatedServices };

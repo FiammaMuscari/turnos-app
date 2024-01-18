@@ -5,7 +5,7 @@ import ServicesList from "@/components/ServicesList";
 import { DatePickerForm } from "@/components/DatePickerForm";
 
 interface Service {
-  id: number;
+  id: string;
   name: string;
   price: string;
 }

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { getAllServices } from "@/actions/services";
 
 type Service = {
-  id: number;
+  id: string;
   name: string;
   price: string;
 };

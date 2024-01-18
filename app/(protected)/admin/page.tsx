@@ -34,13 +34,13 @@ const AdminPage = () => {
   const { update } = useSession();
   const [isPending, startTransition] = useTransition();
   const [serviceList, setServiceList] = useState<
-    { id: number; name: string; price: string }[]
+    { id: string; name: string; price: string }[]
   >([]);
   const form = useForm<z.infer<typeof ServiceSchema>>({
     resolver: zodResolver(ServiceSchema),
     defaultValues: {
-      name: undefined,
-      price: undefined,
+      name: "",
+      price: "",
     },
   });
   const loadServices = async () => {

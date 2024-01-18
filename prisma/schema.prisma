@@ -84,19 +84,19 @@ model TwoFactorConfirmation {
 }
 
 model Appointment {
-  id           Int      @id @default(autoincrement())
-  userId       String  
-  user         User     @relation(fields: [userId], references: [id])
+   id           String             @id @default(cuid())
+  userId       String    
+  user         User      @relation(fields: [userId], references: [id])
   date         DateTime
   time         String
-  isAvailable  Boolean  @default(true)
-  serviceId    Int?
-  service      Service? @relation(fields: [serviceId], references: [id])
+  isAvailable  Boolean   @default(true)
+  services     Service[] 
 }
 
 model Service {
-  id          Int         @id @default(autoincrement())
-  name        String  @unique
+   id           String             @id @default(cuid())
+  name        String     @unique
   price       String
-  appointments Appointment[]
+  appointments Appointment[] 
 }
+
