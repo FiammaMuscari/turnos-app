@@ -87,16 +87,16 @@ model Appointment {
    id           String             @id @default(cuid())
   userId       String    
   user         User      @relation(fields: [userId], references: [id])
-  date         DateTime
+  date         String
   time         String
   isAvailable  Boolean   @default(true)
-  services     Service[] 
+  services     String[] 
 }
 
 model Service {
    id           String             @id @default(cuid())
   name        String     @unique
   price       String
-  appointments Appointment[] 
+  
 }
 

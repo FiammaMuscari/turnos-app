@@ -81,15 +81,9 @@ export const ServiceSchema = z.object({
 
 export const AppointmentSchema = z.object({
   userId: z.string(),
-  date: z.date(),
+  date: z.string(), // You might want to use a specific date format or a Date type here
   time: z.string(),
-  isAvailable: z.boolean().default(true),
-  services: z.array(
-    z.object({
-      name: z.string(),
-      price: z.string(),
-    })
-  ),
+  services: z.array(z.string()), // Array of service IDs associated with the appointment
 });
 
 export const AppointmentServiceSchema = z.object({
