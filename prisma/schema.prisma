@@ -16,7 +16,7 @@ enum UserRole {
 
 model User {
   id            String    @id @default(cuid())
-  name          String?
+  name          String? 
   email         String?   @unique
   emailVerified DateTime?
   image         String?
@@ -85,8 +85,9 @@ model TwoFactorConfirmation {
 
 model Appointment {
    id           String             @id @default(cuid())
-  userId       String    
-  user         User      @relation(fields: [userId], references: [id])
+  userName       String  
+  userEmail       String   
+  user         User       @relation(fields: [ userEmail], references: [ email])
   date         String
   time         String
   isAvailable  Boolean   @default(true)

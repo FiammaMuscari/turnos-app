@@ -18,7 +18,8 @@ export const createAppointment = async (
     const newAppointment = await db.appointment.create({
       data: {
         id: cuid(),
-        userId: values.userId,
+        userName: values.userName,
+        userEmail: values.userEmail,
         date: values.date,
         time: values.time,
         isAvailable: false,
@@ -29,6 +30,21 @@ export const createAppointment = async (
     return { success: "Appointment added successfully!", data: newAppointment };
   } catch (error) {
     console.error("Error adding appointment:", error);
+    return { error: "Something went wrong!" };
+  }
+};
+
+export const getAllAppointmentsByEmail = async (email: string) => {
+  try {
+    const appointments = await db.appointment.findMany({
+      where: {
+        userEmail: email,
+      },
+    });
+
+    return { success: true, data: appointments };
+  } catch (error) {
+    console.error("Error fetching appointments:", error);
     return { error: "Something went wrong!" };
   }
 };

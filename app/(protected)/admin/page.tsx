@@ -67,7 +67,7 @@ const AdminPage = () => {
   }, [user, session, router]);
 
   if (isLoading) {
-    return <h1>Loading...</h1>;
+    return <h1>Cargando...</h1>;
   }
 
   const onSubmit = (values: z.infer<typeof ServiceSchema>) => {

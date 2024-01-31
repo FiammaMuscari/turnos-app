@@ -80,10 +80,11 @@ export const ServiceSchema = z.object({
 });
 
 export const AppointmentSchema = z.object({
-  userId: z.string(),
-  date: z.string(), // You might want to use a specific date format or a Date type here
+  userName: z.string(),
+  userEmail: z.string(),
+  date: z.string(),
   time: z.string(),
-  services: z.array(z.string()), // Array of service IDs associated with the appointment
+  services: z.array(z.string()),
 });
 
 export const AppointmentServiceSchema = z.object({

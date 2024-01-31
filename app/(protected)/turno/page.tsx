@@ -21,6 +21,7 @@ import { useSession } from "next-auth/react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import TimeList from "@/components/TimeList";
+import { useCurrentUserDetails } from "@/hooks/use-current-user-details";
 interface Service {
   id: string;
   name: string;
@@ -53,11 +54,12 @@ const ClientPage: React.FC = () => {
       setSelectedDate(null);
     }
   };
-
+  const userDetails = useCurrentUserDetails();
   const form = useForm<z.infer<typeof AppointmentSchema>>({
     resolver: zodResolver(AppointmentSchema),
     defaultValues: {
-      userId: user?.name || "",
+      userName: userDetails?.name || "",
+      userEmail: userDetails?.email || "",
       date: "",
       time: "",
       services: selectedServices.map((service) => service.name),
