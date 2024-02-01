@@ -1,10 +1,7 @@
-"use client";
-import { es } from "date-fns/locale"; // Importa el locale de español
-
+import { es } from "date-fns/locale";
 import * as React from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { DayPicker } from "react-day-picker";
-
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 
@@ -16,6 +13,10 @@ function Calendar({
   showOutsideDays = true,
   ...props
 }: CalendarProps) {
+  const today = new Date();
+
+  const disabledDays = { before: today };
+
   return (
     <DayPicker
       locale={es}
@@ -61,6 +62,7 @@ function Calendar({
         day_hidden: "invisible",
         ...classNames,
       }}
+      disabled={disabledDays} // Deshabilitar días anteriores al actual
       components={{
         IconLeft: ({ ...props }) => <ChevronLeftIcon className="h-4 w-4" />,
         IconRight: ({ ...props }) => <ChevronRightIcon className="h-4 w-4" />,
@@ -69,6 +71,7 @@ function Calendar({
     />
   );
 }
+
 Calendar.displayName = "Calendar";
 
 export { Calendar };

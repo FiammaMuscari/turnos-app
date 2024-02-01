@@ -38,7 +38,7 @@ const AppointmentsPage = () => {
   }, [session]);
 
   if (isLoading) {
-    return <h1>Cargando...</h1>;
+    return <h1 className="text-white">Cargando...</h1>;
   }
 
   return (

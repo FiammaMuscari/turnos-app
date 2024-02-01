@@ -112,7 +112,9 @@ const ClientPage: React.FC = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <h1 className="mb-3 text-white">Hola, ¿Qué deseas hacerte?</h1>
+        <h1 className="mb-3 text-white flex justify-center">
+          Hola, ¿Qué deseas hacerte?
+        </h1>
         <ServicesList
           handleServiceSelection={handleServiceSelection}
           selectedServices={selectedServices}
@@ -133,7 +135,7 @@ const ClientPage: React.FC = () => {
         </div>
         <DatePickerForm onSelectDate={handleDateSelection} />
         <TimeList onSelectTime={handleTimeSelection} />
-        <Button disabled={isPending} type="submit">
+        <Button disabled={isPending} type="submit" className="mt-4 ">
           Guardar
         </Button>
       </form>

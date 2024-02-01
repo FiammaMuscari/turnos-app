@@ -7,7 +7,8 @@ import { useTransition, useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { UserRole } from "@prisma/client";
-
+import { FaRegCalendarCheck } from "react-icons/fa";
+import { LuClock } from "react-icons/lu";
 import {
   Form,
   FormField,
@@ -22,12 +23,27 @@ import { ServiceSchema } from "@/schemas";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { getAvailableAppointments } from "@/actions/appointments";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
 const AdminPage = () => {
   const user = useCurrentUser();
   const { data: session } = useSession();
   const router = useRouter();
+  const [availableAppointments, setAvailableAppointments] = useState<any[]>([]);
+  useEffect(() => {
+    const fetchAvailableAppointments = async () => {
+      const result = await getAvailableAppointments();
+      if (result.success) {
+        setAvailableAppointments(result.data);
+      } else {
+        setError(result.error);
+      }
+    };
 
+    fetchAvailableAppointments();
+  }, []);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | undefined>();
   const [success, setSuccess] = useState<string | undefined>();
@@ -67,7 +83,7 @@ const AdminPage = () => {
   }, [user, session, router]);
 
   if (isLoading) {
-    return <h1>Cargando...</h1>;
+    return <h1 className="text-white">Cargando...</h1>;
   }
 
   const onSubmit = (values: z.infer<typeof ServiceSchema>) => {
@@ -162,6 +178,7 @@ const AdminPage = () => {
             </Button>
           </form>
         </Form>
+        <h1 className="text-xl  my-4">Servicios</h1>
         {serviceList.map((service) => (
           <div
             key={service.id}
@@ -176,6 +193,22 @@ const AdminPage = () => {
             </Button>
           </div>
         ))}
+        <div>
+          <h1 className="text-xl my-4">Turnos Pendientes:</h1>
+
+          {availableAppointments.map((appointment) => (
+            <ul key={appointment.id} className="border-b py-2 flex gap-4">
+              <li className="flex items-center gap-2">
+                <FaRegCalendarCheck />
+                <p> {appointment.date}</p>
+              </li>
+              <li className="flex items-center gap-2">
+                <LuClock />
+                <p> {appointment.time}</p>
+              </li>
+            </ul>
+          ))}
+        </div>
       </CardContent>
     </Card>
   );

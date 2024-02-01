@@ -34,6 +34,21 @@ export const createAppointment = async (
   }
 };
 
+export const getAvailableAppointments = async () => {
+  try {
+    const availableAppointments = await db.appointment.findMany({
+      where: {
+        isAvailable: false,
+      },
+    });
+
+    return { success: true, data: availableAppointments };
+  } catch (error) {
+    console.error("Error fetching available appointments:", error);
+    return { error: "Something went wrong!" };
+  }
+};
+
 export const getAllAppointmentsByEmail = async (email: string) => {
   try {
     const appointments = await db.appointment.findMany({

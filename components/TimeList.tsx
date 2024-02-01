@@ -24,7 +24,7 @@ const TimeList: React.FC<TimeListProps> = ({ onSelectTime }) => {
 
   return (
     <div>
-      <h2>Seleccione una hora:</h2>
+      <h2 className="text-white my-2">Seleccione una hora:</h2>
       <ul className="grid grid-cols-3 gap-4">
         {generateTimes().map((time, index) => (
           <li

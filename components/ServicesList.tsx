@@ -33,9 +33,9 @@ const ServicesList: React.FC<ServicesListProps> = ({
   }, []);
 
   return (
-    <div>
+    <div className="flex justify-center">
       {serviceList.length === 0 ? (
-        <div>Cargando...</div>
+        <div className="text-white">Cargando...</div>
       ) : (
         <ul className="flex gap-[1em]">
           {serviceList.map((service) => (
