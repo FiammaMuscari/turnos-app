@@ -23,7 +23,7 @@ export default async function RootLayout({
   return (
     <SessionProvider session={session}>
       <html lang="en">
-        <body className="flex flex-col bg-sky-700/65 my-4 mx-2">
+        <body className="flex flex-col bg-sky-700/65 py-4 px-2">
           <Toaster />
           <Navbar />
           {children}
