@@ -26,11 +26,15 @@ import { getAvailableAppointments } from "@/actions/appointments";
 import { format, parse } from "date-fns";
 import { es } from "date-fns/locale";
 import { isToday } from "date-fns";
+import { useCurrentUserDetails } from "@/hooks/use-current-user-details";
 
 type Appointment = {
   id: string;
   date: Date;
   time: string;
+  userName: string;
+  userEmail: string;
+  services: string[];
 };
 
 const AdminPage = () => {
@@ -55,26 +59,29 @@ const AdminPage = () => {
       price: "",
     },
   });
-
-  const sortAppointments = (a: Appointment, b: Appointment) => {
-    if (a.date < b.date) return -1;
-    if (a.date > b.date) return 1;
-    const timeA = parseTime(a.time);
-    const timeB = parseTime(b.time);
-    return timeA - timeB;
-  };
-
-  const parseTime = (timeString: string) => {
-    const [hours, minutes] = timeString.split(":").map(Number);
-    return hours * 60 + minutes;
-  };
+  const currentUser = useCurrentUserDetails();
 
   useEffect(() => {
+    const sortAppointments = (a: Appointment, b: Appointment) => {
+      if (a.date < b.date) return -1;
+      if (a.date > b.date) return 1;
+      const timeA = parseTime(a.time);
+      const timeB = parseTime(b.time);
+      return timeA - timeB;
+    };
+
+    const parseTime = (timeString: string) => {
+      const [hours, minutes] = timeString.split(":").map(Number);
+      return hours * 60 + minutes;
+    };
+
     const fetchAvailableAppointments = async () => {
       const result = await getAvailableAppointments();
       if (result.success) {
         const formattedAppointments = result.data.map((appointment) => ({
           ...appointment,
+          userName: currentUser?.name || "",
+          userEmail: currentUser?.email || "",
           date: parse(appointment.date, "d 'de' MMMM 'del' yyyy", new Date(), {
             locale: es,
           }),
@@ -88,7 +95,7 @@ const AdminPage = () => {
     };
 
     fetchAvailableAppointments();
-  }, []);
+  }, [currentUser?.email, currentUser?.name]);
 
   const loadServices = async () => {
     const result = await getAllServices();
@@ -209,11 +216,14 @@ const AdminPage = () => {
             </Button>
           </form>
         </Form>
-        <h1 className="text-xl  my-4">Servicios</h1>
+        <h1 className="text-xl  my-4">Servicios:</h1>
+        {serviceList.length === 0 && (
+          <div className="text-black">Cargando servicios...</div>
+        )}
         {serviceList.map((service) => (
           <div
             key={service.id}
-            className="flex justify-between items-center border-b py-2"
+            className="flex justify-between items-center border-b py-2 px-20"
           >
             <div className="flex w-full justify-between px-4 gap-2">
               <h1>{capitalizeFirstLetter(service.name)}</h1>
@@ -224,28 +234,52 @@ const AdminPage = () => {
             </Button>
           </div>
         ))}
-        <div>
+        <div className="flex flex-col gap-2">
           <h1 className="text-xl my-4">Turnos Pendientes:</h1>
-
+          {availableAppointments.length === 0 && (
+            <div className="text-black">Cargando turnos...</div>
+          )}
           {availableAppointments
             .filter(
               (appointment) =>
                 isToday(appointment.date) || appointment.date > new Date()
             )
             .map((appointment) => (
-              <ul key={appointment.id} className="border-b py-2 flex gap-4">
-                <li className="flex items-center gap-2">
+              <ul
+                key={appointment.id}
+                className="border border-gray-300 rounded-md grid justify-items-center gap py-2"
+              >
+                <li className="flex flex-col sm:flex-row items-center gap-2">
                   <FaRegCalendarCheck />
                   <p>
-                    {" "}
                     {format(appointment.date, "d 'de' MMMM 'del' yyyy", {
                       locale: es,
                     })}
                   </p>
                 </li>
-                <li className="flex items-center gap-2">
+                <li className="flex flex-col sm:flex-row items-center gap-2">
                   <LuClock />
                   <p> {appointment.time}</p>
+                </li>
+                {isToday(appointment.date) && (
+                  <div className="bg-green-300 text-black rounded-md px-2 text-sm p-1 my-2">
+                    Hoy
+                  </div>
+                )}
+                <li className="flex flex-col sm:flex-row items-center gap-2">
+                  <p> {appointment.userName}</p>
+                </li>
+                <li className="flex flex-col sm:flex-row items-center gap-2">
+                  <p>{appointment.userEmail}</p>
+                </li>
+                <li className="flex flex-col sm:flex-row items-center gap-2 border border-blue-300 rounded-xl px-4">
+                  <p>
+                    {appointment.services.length > 1
+                      ? `${appointment.services
+                          .slice(0, -1)
+                          .join(", ")} y ${appointment.services.slice(-1)}`
+                      : appointment.services.join(", ")}
+                  </p>
                 </li>
               </ul>
             ))}

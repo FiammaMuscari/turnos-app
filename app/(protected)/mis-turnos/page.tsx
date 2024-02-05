@@ -7,6 +7,7 @@ import { FaRegCalendarCheck } from "react-icons/fa";
 import { LuClock } from "react-icons/lu";
 import { format, parse, isToday } from "date-fns";
 import { es } from "date-fns/locale";
+
 type Appointment = {
   id: string;
   userName: string;
@@ -45,6 +46,7 @@ const AppointmentsPage = () => {
       }
       setIsLoading(false);
     };
+
     const sortAppointments = (a: Appointment, b: Appointment) => {
       if (a.date < b.date) return -1;
       if (a.date > b.date) return 1;
@@ -52,74 +54,73 @@ const AppointmentsPage = () => {
       const timeB = parseTime(b.time);
       return timeA - timeB;
     };
+
     const parseTime = (timeString: string) => {
       const [hours, minutes] = timeString.split(":").map(Number);
       return hours * 60 + minutes;
     };
+
     loadAppointments();
   }, [session]);
 
   if (isLoading) {
     return <h1 className="text-white">Cargando...</h1>;
   }
+
+  const today = new Date();
   const pastAppointments = appointments.filter(
     (appointment) => !isToday(appointment.date)
   );
   const upcomingAppointments = appointments.filter(
-    (appointment) => isToday(appointment.date) || appointment.date > new Date()
+    (appointment) => isToday(appointment.date) || appointment.date > today
   );
+
+  const renderAppointments = (appointments: Appointment[], title: string) => (
+    <div>
+      <h1 className="text-xl font-semibold my-4">{title}</h1>
+      {appointments.length === 0 ? (
+        <h2>No hay turnos {title.toLowerCase()}</h2>
+      ) : (
+        appointments.map((appointment) => (
+          <ul
+            key={appointment.id}
+            className="border-b py-2 grid grid-cols-1 md:grid-cols-3 gap-4"
+          >
+            <li className="flex items-center md:col-span-2">
+              <FaRegCalendarCheck className="mr-2" />
+              <p className="whitespace-nowrap">
+                {format(appointment.date, "d 'de' MMMM 'del' yyyy", {
+                  locale: es,
+                })}
+              </p>
+            </li>
+            <li className="flex items-center justify-start md:justify-end">
+              <LuClock className="mr-2" />
+              <p className="whitespace-nowrap">{appointment.time}</p>
+            </li>
+            <li className="md:col-span-3">
+              <p className="whitespace-nowrap px-4 border border-solid border-blue-400 rounded-xl justify-center flex bg-blue-200">
+                {appointment.services.length > 1
+                  ? `${appointment.services
+                      .slice(0, -1)
+                      .join(", ")} y ${appointment.services.slice(-1)}`
+                  : appointment.services.join(", ")}
+              </p>
+            </li>
+          </ul>
+        ))
+      )}
+    </div>
+  );
+
   return (
     <Card className="max-w-[600px]">
       <CardHeader>
         <p className="text-2xl font-semibold text-center">Mis turnos</p>
       </CardHeader>
       <CardContent>
-        <div>
-          <h1 className="text-xl font-semibold mt-4 mb-2">Turnos Pendientes</h1>
-          {upcomingAppointments.length === 0 ? (
-            <h2>No hay turnos pendientes</h2>
-          ) : (
-            upcomingAppointments.map((appointment) => (
-              <ul key={appointment.id} className="border-b py-2 flex gap-4">
-                <li className="flex items-center gap-2">
-                  <FaRegCalendarCheck />
-                  <p>
-                    {format(appointment.date, "d 'de' MMMM 'del' yyyy", {
-                      locale: es,
-                    })}
-                  </p>
-                </li>
-                <li className="flex items-center gap-2">
-                  <LuClock />
-                  <p> {appointment.time}</p>
-                </li>
-              </ul>
-            ))
-          )}
-        </div>
-        <div>
-          <h1 className="text-xl font-semibold my-4">Turnos Pasados</h1>
-          {pastAppointments.length === 0 ? (
-            <h2>No hay turnos pasados</h2>
-          ) : (
-            pastAppointments.map((appointment) => (
-              <ul key={appointment.id} className="border-b py-2 flex gap-4">
-                <li className="flex items-center gap-2">
-                  <FaRegCalendarCheck />
-                  <p>
-                    {format(appointment.date, "d 'de' MMMM 'del' yyyy", {
-                      locale: es,
-                    })}
-                  </p>
-                </li>
-                <li className="flex items-center gap-2">
-                  <LuClock />
-                  <p> {appointment.time}</p>
-                </li>
-              </ul>
-            ))
-          )}
-        </div>
+        {renderAppointments(upcomingAppointments, "Turnos Pendientes")}
+        {renderAppointments(pastAppointments, "Turnos Pasados")}
       </CardContent>
     </Card>
   );

@@ -4,9 +4,9 @@ export const useCurrentUserDetails = () => {
   const { data: session } = useSession();
 
   if (session && session.user) {
-    const { name, email } = session.user; // Desestructurar el objeto user para obtener name y email
+    const { name, email } = session.user;
     return { name, email };
   }
 
-  return null; // Si no hay sesión o usuario, devolver null
+  return null;
 };
