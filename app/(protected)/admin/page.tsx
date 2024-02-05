@@ -1,5 +1,4 @@
 "use client";
-
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,26 +23,23 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { getAvailableAppointments } from "@/actions/appointments";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 import { es } from "date-fns/locale";
+import { isToday } from "date-fns";
+
+type Appointment = {
+  id: string;
+  date: Date;
+  time: string;
+};
 
 const AdminPage = () => {
   const user = useCurrentUser();
   const { data: session } = useSession();
   const router = useRouter();
-  const [availableAppointments, setAvailableAppointments] = useState<any[]>([]);
-  useEffect(() => {
-    const fetchAvailableAppointments = async () => {
-      const result = await getAvailableAppointments();
-      if (result.success) {
-        setAvailableAppointments(result.data);
-      } else {
-        setError(result.error);
-      }
-    };
-
-    fetchAvailableAppointments();
-  }, []);
+  const [availableAppointments, setAvailableAppointments] = useState<
+    Appointment[]
+  >([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | undefined>();
   const [success, setSuccess] = useState<string | undefined>();
@@ -59,6 +55,41 @@ const AdminPage = () => {
       price: "",
     },
   });
+
+  const sortAppointments = (a: Appointment, b: Appointment) => {
+    if (a.date < b.date) return -1;
+    if (a.date > b.date) return 1;
+    const timeA = parseTime(a.time);
+    const timeB = parseTime(b.time);
+    return timeA - timeB;
+  };
+
+  const parseTime = (timeString: string) => {
+    const [hours, minutes] = timeString.split(":").map(Number);
+    return hours * 60 + minutes;
+  };
+
+  useEffect(() => {
+    const fetchAvailableAppointments = async () => {
+      const result = await getAvailableAppointments();
+      if (result.success) {
+        const formattedAppointments = result.data.map((appointment) => ({
+          ...appointment,
+          date: parse(appointment.date, "d 'de' MMMM 'del' yyyy", new Date(), {
+            locale: es,
+          }),
+        }));
+        const sortedAppointments = formattedAppointments.sort(sortAppointments);
+        setAvailableAppointments(sortedAppointments);
+      } else {
+        setError(result.error);
+      }
+      setIsLoading(false);
+    };
+
+    fetchAvailableAppointments();
+  }, []);
+
   const loadServices = async () => {
     const result = await getAllServices();
 
@@ -196,18 +227,28 @@ const AdminPage = () => {
         <div>
           <h1 className="text-xl my-4">Turnos Pendientes:</h1>
 
-          {availableAppointments.map((appointment) => (
-            <ul key={appointment.id} className="border-b py-2 flex gap-4">
-              <li className="flex items-center gap-2">
-                <FaRegCalendarCheck />
-                <p> {appointment.date}</p>
-              </li>
-              <li className="flex items-center gap-2">
-                <LuClock />
-                <p> {appointment.time}</p>
-              </li>
-            </ul>
-          ))}
+          {availableAppointments
+            .filter(
+              (appointment) =>
+                isToday(appointment.date) || appointment.date > new Date()
+            )
+            .map((appointment) => (
+              <ul key={appointment.id} className="border-b py-2 flex gap-4">
+                <li className="flex items-center gap-2">
+                  <FaRegCalendarCheck />
+                  <p>
+                    {" "}
+                    {format(appointment.date, "d 'de' MMMM 'del' yyyy", {
+                      locale: es,
+                    })}
+                  </p>
+                </li>
+                <li className="flex items-center gap-2">
+                  <LuClock />
+                  <p> {appointment.time}</p>
+                </li>
+              </ul>
+            ))}
         </div>
       </CardContent>
     </Card>
