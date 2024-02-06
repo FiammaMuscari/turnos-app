@@ -21,7 +21,9 @@ import { useSession } from "next-auth/react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import TimeList from "@/components/TimeList";
+import { useToast } from "@/components/ui/use-toast";
 import { useCurrentUserDetails } from "@/hooks/use-current-user-details";
+import { Toaster } from "@/components/ui/toaster";
 interface Service {
   id: string;
   name: string;
@@ -38,7 +40,7 @@ const ClientPage: React.FC = () => {
   const [success, setSuccess] = useState<string | undefined>();
   const { update } = useSession();
   const user = useCurrentUser();
-
+  const { toast } = useToast();
   useEffect(() => {
     const total = selectedServices.reduce(
       (accumulator, service) => accumulator + parseFloat(service.price),
@@ -67,6 +69,15 @@ const ClientPage: React.FC = () => {
   });
 
   const onSubmit = async (values: z.infer<typeof AppointmentSchema>) => {
+    if (!selectedDate || !selectedTime || selectedServices.length === 0) {
+      toast({
+        title: "Error",
+        description:
+          "Por favor, complete todos los campos para agendar el turno",
+        variant: "destructive",
+      });
+      return; // Detener el envío del formulario
+    }
     const updatedValues = {
       ...values,
       date: selectedDate || "",
@@ -108,38 +119,50 @@ const ClientPage: React.FC = () => {
   const handleTimeSelection = (time: string) => {
     setSelectedTime(time);
   };
-
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
-        <h1 className="mb-3 text-white flex justify-center">
-          Hola, ¿Qué deseas hacerte?
-        </h1>
-        <ServicesList
-          handleServiceSelection={handleServiceSelection}
-          selectedServices={selectedServices}
-        />
-        <div className="max-w-80 bg-white rounded-sm p-4 m-3">
-          <h2>A pagar:</h2>
-          {selectedServices.length > 0 ? (
-            selectedServices.map((service) => (
-              <ul key={service.id} className="flex justify-end">
-                <li>{service.name}</li>
-                <li>.......... ${service.price}</li>
-              </ul>
-            ))
-          ) : (
-            <div>No hay servicios seleccionados</div>
-          )}
-          <div className="text-blue-400">Total: $ {totalPrice}</div>
-        </div>
-        <DatePickerForm onSelectDate={handleDateSelection} />
-        <TimeList onSelectTime={handleTimeSelection} />
-        <Button disabled={isPending} type="submit" className="mt-4 ">
-          Guardar
-        </Button>
-      </form>
-    </Form>
+    <>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <h1 className="mb-3 text-white flex justify-center">
+            Hola, ¿Qué deseas hacerte?
+          </h1>
+          <ServicesList
+            handleServiceSelection={handleServiceSelection}
+            selectedServices={selectedServices}
+          />
+          <div className="max-w-80 bg-white rounded-sm p-4 m-3">
+            <h2>A pagar:</h2>
+            {selectedServices.length > 0 ? (
+              selectedServices.map((service) => (
+                <ul key={service.id} className="flex justify-end">
+                  <li>{service.name}</li>
+                  <li>.......... ${service.price}</li>
+                </ul>
+              ))
+            ) : (
+              <div>No hay servicios seleccionados</div>
+            )}
+            <div className="text-blue-400">Total: $ {totalPrice}</div>
+          </div>
+          <DatePickerForm onSelectDate={handleDateSelection} />
+          <TimeList onSelectTime={handleTimeSelection} />
+          <Button
+            disabled={isPending || success !== undefined}
+            type="submit"
+            className="mt-4 "
+            onClick={() => {
+              toast({
+                title: "Turno agendado",
+                description: `El día ${selectedDate}`,
+              });
+            }}
+          >
+            Guardar
+          </Button>
+        </form>
+      </Form>
+      <Toaster />
+    </>
   );
 };
 

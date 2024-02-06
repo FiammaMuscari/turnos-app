@@ -16,6 +16,9 @@ function Calendar({
   const today = new Date();
 
   const disabledDays = { before: today };
+  const threeMonthsLater = new Date();
+  threeMonthsLater.setMonth(today.getMonth() + 6);
+  const disabledDaysAfterThreeMonths = { after: threeMonthsLater };
 
   return (
     <DayPicker
@@ -62,7 +65,7 @@ function Calendar({
         day_hidden: "invisible",
         ...classNames,
       }}
-      disabled={disabledDays} // Deshabilitar días anteriores al actual
+      disabled={{ ...disabledDays, ...disabledDaysAfterThreeMonths }}
       components={{
         IconLeft: ({ ...props }) => <ChevronLeftIcon className="h-4 w-4" />,
         IconRight: ({ ...props }) => <ChevronRightIcon className="h-4 w-4" />,

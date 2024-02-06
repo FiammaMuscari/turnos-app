@@ -221,17 +221,14 @@ const AdminPage = () => {
           <div className="text-black">Cargando servicios...</div>
         )}
         {serviceList.map((service) => (
-          <div
-            key={service.id}
-            className="flex justify-between items-center border-b py-2 px-20"
-          >
-            <div className="flex w-full justify-between px-4 gap-2">
-              <h1>{capitalizeFirstLetter(service.name)}</h1>
+          <div key={service.id} className="flex w-full  border-b py-2 ">
+            <div className="flex justify-around w-full items-center">
+              <h1 className="w-3">{capitalizeFirstLetter(service.name)}</h1>
               <h1>${service.price}</h1>
+              <Button onClick={() => onDeleteServiceClick(service.name)}>
+                Eliminar
+              </Button>
             </div>
-            <Button onClick={() => onDeleteServiceClick(service.name)}>
-              Eliminar
-            </Button>
           </div>
         ))}
         <div className="flex flex-col gap-2">

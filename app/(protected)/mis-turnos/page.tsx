@@ -64,12 +64,12 @@ const AppointmentsPage = () => {
   }, [session]);
 
   if (isLoading) {
-    return <h1 className="text-white">Cargando...</h1>;
+    return <h1 className="text-white mt-6">Cargando...</h1>;
   }
 
   const today = new Date();
   const pastAppointments = appointments.filter(
-    (appointment) => !isToday(appointment.date)
+    (appointment) => appointment.date < today && !isToday(appointment.date)
   );
   const upcomingAppointments = appointments.filter(
     (appointment) => isToday(appointment.date) || appointment.date > today
