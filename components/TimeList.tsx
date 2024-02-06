@@ -2,14 +2,20 @@ import React, { useState } from "react";
 
 interface TimeListProps {
   onSelectTime: (time: string) => void;
+  unavailableTimes: string[];
 }
 
-const TimeList: React.FC<TimeListProps> = ({ onSelectTime }) => {
+const TimeList: React.FC<TimeListProps> = ({
+  onSelectTime,
+  unavailableTimes,
+}) => {
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
   const handleTimeSelection = (time: string) => {
-    setSelectedTime(time);
-    onSelectTime(time);
+    if (!unavailableTimes.includes(time)) {
+      setSelectedTime(time);
+      onSelectTime(time);
+    }
   };
 
   // Generar una lista de horas de 9am a 5pm
@@ -32,6 +38,8 @@ const TimeList: React.FC<TimeListProps> = ({ onSelectTime }) => {
             className={`p-4 rounded-sm cursor-pointer ${
               selectedTime === time
                 ? "bg-white text-blue-400"
+                : unavailableTimes.includes(time)
+                ? "bg-slate-500 text-black cursor-not-allowed"
                 : "bg-slate-200 text-black"
             }`}
             onClick={() => handleTimeSelection(time)}

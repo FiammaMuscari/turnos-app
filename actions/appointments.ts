@@ -63,3 +63,25 @@ export const getAllAppointmentsByEmail = async (email: string) => {
     return { error: "Something went wrong!" };
   }
 };
+
+export const getUnavailableTimes = async (selectedDate: string) => {
+  try {
+    const unavailableAppointments = await db.appointment.findMany({
+      where: {
+        date: selectedDate,
+        isAvailable: false,
+      },
+      select: {
+        time: true,
+      },
+    });
+
+    const unavailableTimes = unavailableAppointments.map(
+      (appointment) => appointment.time
+    );
+    return { success: true, data: unavailableTimes };
+  } catch (error) {
+    console.error("Error fetching unavailable times:", error);
+    return { error: "Something went wrong!" };
+  }
+};

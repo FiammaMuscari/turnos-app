@@ -24,6 +24,7 @@ import TimeList from "@/components/TimeList";
 import { useToast } from "@/components/ui/use-toast";
 import { useCurrentUserDetails } from "@/hooks/use-current-user-details";
 import { Toaster } from "@/components/ui/toaster";
+import { getUnavailableTimes } from "@/actions/appointments";
 interface Service {
   id: string;
   name: string;
@@ -41,6 +42,7 @@ const ClientPage: React.FC = () => {
   const { update } = useSession();
   const user = useCurrentUser();
   const { toast } = useToast();
+  const [unavailableTimes, setUnavailableTimes] = useState<string[]>([]);
   useEffect(() => {
     const total = selectedServices.reduce(
       (accumulator, service) => accumulator + parseFloat(service.price),
@@ -52,6 +54,15 @@ const ClientPage: React.FC = () => {
   const handleDateSelection = (date: string | undefined) => {
     if (date) {
       setSelectedDate(date);
+      getUnavailableTimes(date)
+        .then((data) => {
+          if (data.success) {
+            setUnavailableTimes(data.data);
+          } else {
+            setError(data.error);
+          }
+        })
+        .catch(() => setError("Something went wrong"));
     } else {
       setSelectedDate(null);
     }
@@ -76,7 +87,7 @@ const ClientPage: React.FC = () => {
           "Por favor, complete todos los campos para agendar el turno",
         variant: "destructive",
       });
-      return; // Detener el envío del formulario
+      return;
     }
     const updatedValues = {
       ...values,
@@ -145,7 +156,10 @@ const ClientPage: React.FC = () => {
             <div className="text-blue-400">Total: $ {totalPrice}</div>
           </div>
           <DatePickerForm onSelectDate={handleDateSelection} />
-          <TimeList onSelectTime={handleTimeSelection} />
+          <TimeList
+            onSelectTime={handleTimeSelection}
+            unavailableTimes={unavailableTimes}
+          />
           <Button
             disabled={isPending || success !== undefined}
             type="submit"
