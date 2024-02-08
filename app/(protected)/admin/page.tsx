@@ -163,10 +163,6 @@ const AdminPage = () => {
     });
   };
 
-  const capitalizeFirstLetter = (input: string): string => {
-    return input.charAt(0).toUpperCase() + input.slice(1);
-  };
-
   return (
     <Card>
       <CardHeader>
@@ -223,8 +219,15 @@ const AdminPage = () => {
         {serviceList.map((service) => (
           <div key={service.id} className="flex w-full  border-b py-2 ">
             <div className="flex justify-around w-full items-center">
-              <h1 className="w-3">{capitalizeFirstLetter(service.name)}</h1>
-              <h1>${service.price}</h1>
+              <h1 className="w-3">
+                {service.name.charAt(0).toUpperCase() + service.name.slice(1)}
+              </h1>
+              <h1>
+                {parseFloat(service.price).toLocaleString("es-AR", {
+                  style: "currency",
+                  currency: "ARS",
+                })}
+              </h1>
               <Button onClick={() => onDeleteServiceClick(service.name)}>
                 Eliminar
               </Button>

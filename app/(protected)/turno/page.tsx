@@ -130,6 +130,10 @@ const ClientPage: React.FC = () => {
   const handleTimeSelection = (time: string) => {
     setSelectedTime(time);
   };
+  const formattedTotalPrice = totalPrice.toLocaleString("es-AR", {
+    style: "currency",
+    currency: "ARS",
+  });
   return (
     <>
       <Form {...form}>
@@ -147,13 +151,19 @@ const ClientPage: React.FC = () => {
               selectedServices.map((service) => (
                 <ul key={service.id} className="flex justify-end">
                   <li>{service.name}</li>
-                  <li>.......... ${service.price}</li>
+                  <li>
+                    ..........{" "}
+                    {parseFloat(service.price).toLocaleString("es-AR", {
+                      style: "currency",
+                      currency: "ARS",
+                    })}
+                  </li>
                 </ul>
               ))
             ) : (
               <div>No hay servicios seleccionados</div>
             )}
-            <div className="text-blue-400">Total: $ {totalPrice}</div>
+            <div className="text-blue-400">Total: {formattedTotalPrice} </div>
           </div>
           <DatePickerForm onSelectDate={handleDateSelection} />
           <TimeList

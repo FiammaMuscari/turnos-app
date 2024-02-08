@@ -60,9 +60,17 @@ const ServicesList: React.FC<ServicesListProps> = ({
                     width: 0,
                   }}
                 />
-                <div className="serviceInfo">
-                  <h3 className="serviceName">{service.name}</h3>
-                  <p className="servicePrice">${service.price}</p>
+                <div className="flex flex-col ">
+                  <h3 className="text-center">
+                    {service.name.charAt(0).toUpperCase() +
+                      service.name.slice(1)}
+                  </h3>
+                  <p className="">
+                    {parseFloat(service.price).toLocaleString("es-AR", {
+                      style: "currency",
+                      currency: "ARS",
+                    })}
+                  </p>
                 </div>
               </label>
             </li>
