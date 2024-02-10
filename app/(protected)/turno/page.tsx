@@ -25,6 +25,9 @@ import { useToast } from "@/components/ui/use-toast";
 import { useCurrentUserDetails } from "@/hooks/use-current-user-details";
 import { Toaster } from "@/components/ui/toaster";
 import { getUnavailableTimes } from "@/actions/appointments";
+import { payment } from "@/actions/payment";
+import { MercadoPagoConfig, Preference } from "mercadopago";
+import { redirect } from "next/navigation";
 interface Service {
   id: string;
   name: string;
@@ -79,40 +82,73 @@ const ClientPage: React.FC = () => {
     },
   });
 
+  const client = new MercadoPagoConfig({
+    accessToken: process.env.MP_ACCESS_TOKEN!,
+  });
+
+  // async function payment(formattedTotalPrice: string) {
+  //   "use server";
+  //   const preference = await new Preference(client).create({
+  //     body: {
+  //       items: [
+  //         {
+  //           id: "turno",
+  //           title: "pago",
+  //           quantity: 1,
+  //           unit_price: parseFloat(formattedTotalPrice),
+  //         },
+  //       ],
+  //     },
+  //   });
+
+  //   redirect(preference.sandbox_init_point!);
+  // }
+  const formattedTotalPrice = totalPrice.toLocaleString("es-AR", {
+    style: "currency",
+    currency: "ARS",
+  });
   const onSubmit = async (values: z.infer<typeof AppointmentSchema>) => {
-    if (!selectedDate || !selectedTime || selectedServices.length === 0) {
-      toast({
-        title: "Error",
-        description:
-          "Por favor, complete todos los campos para agendar el turno",
-        variant: "destructive",
-      });
-      return;
+    // if (!selectedDate || !selectedTime || selectedServices.length === 0) {
+    //   toast({
+    //     title: "Error",
+    //     description:
+    //       "Por favor, complete todos los campos para agendar el turno",
+    //     variant: "destructive",
+    //   });
+    //   return;
+    // }
+    try {
+      const preferenceUrl = await payment(totalPrice);
+      window.location.href = preferenceUrl;
+    } catch (error) {
+      console.error("Error during payment:", error);
+      setError("Something went wrong during payment");
     }
-    const updatedValues = {
-      ...values,
-      date: selectedDate || "",
-      time: selectedTime || "",
-      services: selectedServices.map((service) => service.name),
-    };
+    // const updatedValues = {
+    //   ...values,
+    //   date: selectedDate || "",
+    //   time: selectedTime || "",
+    //   services: selectedServices.map((service) => service.name),
+    // };
 
-    console.log("Valores a enviar al crear la cita:", updatedValues);
+    // console.log("Valores a enviar al crear la cita:", updatedValues);
 
-    startTransition(() => {
-      createAppointment(updatedValues)
-        .then((data) => {
-          if (data.error) {
-            setError(data.error);
-          }
+    // startTransition(() => {
+    //   createAppointment(updatedValues)
+    //     .then((data) => {
+    //       if (data.error) {
+    //         setError(data.error);
+    //       }
 
-          if (data.success) {
-            update();
-            setSuccess(data.success);
-          }
-        })
-        .catch(() => setError("Algo salió mal"));
-    });
+    //       if (data.success) {
+    //         update();
+    //         setSuccess(data.success);
+    //       }
+    //     })
+    //     .catch(() => setError("Algo salió mal"));
+    // });
   };
+
   const handleServiceSelection = (service: Service) => {
     const isServiceSelected = selectedServices.some(
       (s) => s.name === service.name
@@ -130,10 +166,7 @@ const ClientPage: React.FC = () => {
   const handleTimeSelection = (time: string) => {
     setSelectedTime(time);
   };
-  const formattedTotalPrice = totalPrice.toLocaleString("es-AR", {
-    style: "currency",
-    currency: "ARS",
-  });
+
   return (
     <>
       <Form {...form}>
