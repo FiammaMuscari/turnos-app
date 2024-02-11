@@ -117,13 +117,42 @@ const ClientPage: React.FC = () => {
     //   });
     //   return;
     // }
-    try {
-      const preferenceUrl = await payment(totalPrice);
-      window.location.href = preferenceUrl;
-    } catch (error) {
-      console.error("Error during payment:", error);
-      setError("Something went wrong during payment");
-    }
+    // try {
+    // const preferenceUrl = await payment(totalPrice);
+    // window.location.href = preferenceUrl;
+
+    // await new Promise<void>((resolve, reject) => {
+    //   const handlePaymentSuccess = async () => {
+    //     try {
+    //       const updatedValues = {
+    //         ...values,
+    //         date: selectedDate || "",
+    //         time: selectedTime || "",
+    //         services: selectedServices.map((service) => service.name),
+    //       };
+
+    //       await createAppointment(updatedValues);
+
+    //       update();
+    //       setSuccess("Turno agendado exitosamente");
+    //       window.location.href = "/mis-turnos";
+    //       toast({
+    //         title: "Turno agendado",
+    //         description: `El día ${selectedDate}`,
+    //       });
+    //       resolve();
+    //     } catch (error) {
+    //       reject(error);
+    //     }
+    //   };
+
+    //   window.addEventListener("paymentSuccess", handlePaymentSuccess);
+    // });
+    // } catch (error) {
+    //   console.error("Error during payment:", error);
+    //   setError("Something went wrong during payment");
+    // }
+
     // const updatedValues = {
     //   ...values,
     //   date: selectedDate || "",
@@ -147,6 +176,49 @@ const ClientPage: React.FC = () => {
     //     })
     //     .catch(() => setError("Algo salió mal"));
     // });
+
+    if (!selectedDate || !selectedTime || selectedServices.length === 0) {
+      toast({
+        title: "Error",
+        description:
+          "Por favor, complete todos los campos para agendar el turno",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const preferenceUrl = await payment(totalPrice);
+      window.location.href = preferenceUrl;
+
+      window.addEventListener("paymentSuccess", async () => {
+        try {
+          const updatedValues = {
+            ...values,
+            date: selectedDate || "",
+            time: selectedTime || "",
+            services: selectedServices.map((service) => service.name),
+          };
+
+          await createAppointment(updatedValues);
+
+          update();
+          setSuccess("Turno agendado exitosamente");
+          toast({
+            title: "Turno agendado",
+            description: `El día ${selectedDate}`,
+          });
+
+          window.location.href = "/mis-turnos";
+        } catch (error) {
+          console.error("Error al crear el appointment:", error);
+          setError("Something went wrong");
+        }
+      });
+    } catch (error) {
+      console.error("Error during payment:", error);
+      setError("Something went wrong during payment");
+    }
   };
 
   const handleServiceSelection = (service: Service) => {
@@ -207,12 +279,6 @@ const ClientPage: React.FC = () => {
             disabled={isPending || success !== undefined}
             type="submit"
             className="mt-4 "
-            onClick={() => {
-              toast({
-                title: "Turno agendado",
-                description: `El día ${selectedDate}`,
-              });
-            }}
           >
             Guardar
           </Button>
