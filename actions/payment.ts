@@ -17,6 +17,10 @@ export async function payment(totalPrice: number) {
           unit_price: totalPrice,
         },
       ],
+      back_urls: {
+        success: "https://turnos-app-three.vercel.app/mis-turnos",
+      },
+      auto_return: "approved",
     },
   });
 
