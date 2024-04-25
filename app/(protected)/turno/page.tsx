@@ -86,97 +86,12 @@ const ClientPage: React.FC = () => {
     accessToken: process.env.MP_ACCESS_TOKEN!,
   });
 
-  // async function payment(formattedTotalPrice: string) {
-  //   "use server";
-  //   const preference = await new Preference(client).create({
-  //     body: {
-  //       items: [
-  //         {
-  //           id: "turno",
-  //           title: "pago",
-  //           quantity: 1,
-  //           unit_price: parseFloat(formattedTotalPrice),
-  //         },
-  //       ],
-  //     },
-  //   });
-
-  //   redirect(preference.sandbox_init_point!);
-  // }
   const formattedTotalPrice = totalPrice.toLocaleString("es-AR", {
     style: "currency",
     currency: "ARS",
   });
+
   const onSubmit = async (values: z.infer<typeof AppointmentSchema>) => {
-    // if (!selectedDate || !selectedTime || selectedServices.length === 0) {
-    //   toast({
-    //     title: "Error",
-    //     description:
-    //       "Por favor, complete todos los campos para agendar el turno",
-    //     variant: "destructive",
-    //   });
-    //   return;
-    // }
-    // try {
-    // const preferenceUrl = await payment(totalPrice);
-    // window.location.href = preferenceUrl;
-
-    // await new Promise<void>((resolve, reject) => {
-    //   const handlePaymentSuccess = async () => {
-    //     try {
-    //       const updatedValues = {
-    //         ...values,
-    //         date: selectedDate || "",
-    //         time: selectedTime || "",
-    //         services: selectedServices.map((service) => service.name),
-    //       };
-
-    //       await createAppointment(updatedValues);
-
-    //       update();
-    //       setSuccess("Turno agendado exitosamente");
-    //       window.location.href = "/mis-turnos";
-    //       toast({
-    //         title: "Turno agendado",
-    //         description: `El día ${selectedDate}`,
-    //       });
-    //       resolve();
-    //     } catch (error) {
-    //       reject(error);
-    //     }
-    //   };
-
-    //   window.addEventListener("paymentSuccess", handlePaymentSuccess);
-    // });
-    // } catch (error) {
-    //   console.error("Error during payment:", error);
-    //   setError("Something went wrong during payment");
-    // }
-
-    // const updatedValues = {
-    //   ...values,
-    //   date: selectedDate || "",
-    //   time: selectedTime || "",
-    //   services: selectedServices.map((service) => service.name),
-    // };
-
-    // console.log("Valores a enviar al crear la cita:", updatedValues);
-
-    // startTransition(() => {
-    //   createAppointment(updatedValues)
-    //     .then((data) => {
-    //       if (data.error) {
-    //         setError(data.error);
-    //       }
-
-    //       if (data.success) {
-    //         update();
-    //         setSuccess(data.success);
-    //       }
-    //     })
-    //     .catch(() => setError("Algo salió mal"));
-    // });
-
     if (!selectedDate || !selectedTime || selectedServices.length === 0) {
       toast({
         title: "Error",
@@ -191,7 +106,7 @@ const ClientPage: React.FC = () => {
       const preferenceUrl = await payment(totalPrice);
       window.location.href = preferenceUrl;
 
-      window.addEventListener("paymentSuccess", async () => {
+      const checkPaymentStatus = async () => {
         try {
           const updatedValues = {
             ...values,
@@ -199,24 +114,34 @@ const ClientPage: React.FC = () => {
             time: selectedTime || "",
             services: selectedServices.map((service) => service.name),
           };
-
-          await createAppointment(updatedValues);
-
-          update();
-          setSuccess("Turno agendado exitosamente");
-          toast({
-            title: "Turno agendado",
-            description: `El día ${selectedDate}`,
+          const response = await fetch("/notifications", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ data: { id: payment } }),
           });
-
-          window.location.href = "/mis-turnos";
+          const data = await response.json();
+          if (data.status === "approved") {
+            await createAppointment(updatedValues);
+            update();
+            setSuccess("Turno agendado exitosamente");
+            toast({
+              title: "Turno agendado",
+              description: `El día ${selectedDate}`,
+            });
+          } else {
+            setTimeout(checkPaymentStatus, 1000);
+          }
         } catch (error) {
-          console.error("Error al crear el appointment:", error);
-          setError("Something went wrong");
+          console.error("Error al verificar el estado del pago:", error);
+          setError("Something went wrong while verifying payment status");
         }
-      });
+      };
+
+      checkPaymentStatus();
     } catch (error) {
-      console.error("Error during payment:", error);
+      console.error("Error durante el pago:", error);
       setError("Something went wrong during payment");
     }
   };

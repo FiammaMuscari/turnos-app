@@ -17,8 +17,9 @@ export async function payment(totalPrice: number) {
           unit_price: totalPrice,
         },
       ],
+      notification_url: `${process.env.NEXT_PUBLIC_APP_URL}/notifications`,
       back_urls: {
-        success: "https://turnos-app-three.vercel.app/mis-turnos",
+        success: `${process.env.NEXT_PUBLIC_APP_URL}/turnos`,
       },
       auto_return: "approved",
     },
