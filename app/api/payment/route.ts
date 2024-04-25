@@ -1,14 +1,12 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { MercadoPagoConfig, Payment } from "mercadopago";
 
 const mercadopago = new MercadoPagoConfig({
   accessToken: process.env.MP_ACCESS_TOKEN!,
 });
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default async function GET(req: NextRequest, res: NextResponse) {
   const searchParams = new URLSearchParams(req.url?.split("?")[1] || "");
   const topic = searchParams.get("topic") || searchParams.get("type");
 
@@ -16,14 +14,14 @@ export default async function handler(
 
   try {
     if (topic === "payment") {
-      const body = req.body as { data: { id: string } };
+      const body = req.body as unknown as { data: { id: string } };
       const payment = await new Payment(mercadopago).get({ id: body.data.id });
-      return res.status(200).json({ payment });
+      return new NextResponse(null, { status: 200 });
     } else {
-      return res.status(400).json({ message: "Invalid topic" });
+      return new NextResponse(null, { status: 400 });
     }
   } catch (error) {
     console.error("Error processing payment:", error);
-    return res.status(500).json({ error: "Error processing payment" });
+    return new NextResponse(null, { status: 500 });
   }
 }
