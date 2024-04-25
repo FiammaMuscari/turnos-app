@@ -1,25 +1,17 @@
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+
 import { MercadoPagoConfig, Payment } from "mercadopago";
 
-const client = new MercadoPagoConfig({
+const mercadopago = new MercadoPagoConfig({
   accessToken: process.env.MP_ACCESS_TOKEN!,
 });
 
-export async function GET(req: NextRequest) {
-  const searchParams = req.nextUrl.searchParams;
-  const topic = searchParams.get("topic") || searchParams.get("type");
+export async function POST(request: NextRequest) {
+  const body = await request
+    .json()
+    .then((data) => data as { data: { id: string } });
 
-  try {
-    if (topic === "payment") {
-      return NextResponse.json({ success: true }, { status: 200 });
-    } else {
-      return NextResponse.json({ success: false }, { status: 400 });
-    }
-  } catch (error) {
-    console.error("Error al verificar el estado del pago:", error);
-    return NextResponse.json({
-      success: false,
-      error: "Payment status verification error",
-    });
-  }
+  const payment = await new Payment(mercadopago).get({ id: body.data.id });
+
+  return Response.json({ success: true });
 }
