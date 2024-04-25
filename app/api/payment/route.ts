@@ -5,17 +5,15 @@ const client = new MercadoPagoConfig({
   accessToken: process.env.MP_ACCESS_TOKEN!,
 });
 
-export async function POST(request: NextRequest) {
-  const body = await request.json();
-  const paymentId = body.data.id;
+export async function GET(req: NextRequest) {
+  const searchParams = req.nextUrl.searchParams;
+  const topic = searchParams.get("topic") || searchParams.get("type");
 
   try {
-    const payment = await new Payment(client).get({ id: paymentId });
-
-    if (payment.status === "approved") {
-      return NextResponse.json({ success: true });
+    if (topic === "payment") {
+      return NextResponse.json({ success: true }, { status: 200 });
     } else {
-      return NextResponse.json({ success: false });
+      return NextResponse.json({ success: false }, { status: 400 });
     }
   } catch (error) {
     console.error("Error al verificar el estado del pago:", error);

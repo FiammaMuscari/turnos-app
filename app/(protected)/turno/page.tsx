@@ -114,7 +114,7 @@ const ClientPage: React.FC = () => {
             time: selectedTime || "",
             services: selectedServices.map((service) => service.name),
           };
-          const response = await fetch("/notifications", {
+          const response = await fetch("/api/payment", {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
@@ -122,7 +122,7 @@ const ClientPage: React.FC = () => {
             body: JSON.stringify({ data: { id: payment } }),
           });
           const data = await response.json();
-          if (data.status === "approved") {
+          if (data.status === 200) {
             await createAppointment(updatedValues);
             update();
             setSuccess("Turno agendado exitosamente");
