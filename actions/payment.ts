@@ -17,7 +17,7 @@ export async function payment(totalPrice: number) {
           unit_price: totalPrice,
         },
       ],
-      notification_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/payment`,
+      notification_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/notification`,
       back_urls: {
         success: `${process.env.NEXT_PUBLIC_APP_URL}/turnos`,
       },
