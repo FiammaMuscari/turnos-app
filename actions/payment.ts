@@ -19,7 +19,7 @@ export async function payment(totalPrice: number) {
       ],
       notification_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/notification`,
       back_urls: {
-        success: `${process.env.NEXT_PUBLIC_APP_URL}/turnos`,
+        success: `${process.env.NEXT_PUBLIC_APP_URL}/turno`,
       },
       auto_return: "approved",
     },

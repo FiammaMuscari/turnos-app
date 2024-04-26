@@ -106,40 +106,40 @@ const ClientPage: React.FC = () => {
       const preferenceUrl = await payment(totalPrice);
       window.location.href = preferenceUrl;
 
-      const checkPaymentStatus = async () => {
-        try {
-          const updatedValues = {
-            ...values,
-            date: selectedDate || "",
-            time: selectedTime || "",
-            services: selectedServices.map((service) => service.name),
-          };
-          const response = await fetch("/api/payment", {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ data: { id: payment } }),
-          });
-          const data = await response.json();
-          if (data.status === 200) {
-            await createAppointment(updatedValues);
-            update();
-            setSuccess("Turno agendado exitosamente");
-            toast({
-              title: "Turno agendado",
-              description: `El día ${selectedDate}`,
-            });
-          } else {
-            setTimeout(checkPaymentStatus, 1000);
-          }
-        } catch (error) {
-          console.error("Error al verificar el estado del pago:", error);
-          setError("Something went wrong while verifying payment status");
-        }
-      };
-
-      checkPaymentStatus();
+      //PROBLEMONN
+      // const checkPaymentStatus = async () => {
+      //   try {
+      //     const updatedValues = {
+      //       ...values,
+      //       date: selectedDate || "",
+      //       time: selectedTime || "",
+      //       services: selectedServices.map((service) => service.name),
+      //     };
+      //     const response = await fetch("/api/notification", {
+      //       method: "GET",
+      //       headers: {
+      //         "Content-Type": "application/json",
+      //       },
+      //       body: JSON.stringify({ data: { id: payment } }),
+      //     });
+      //     const data = await response.json();
+      //     if (data.status === 200) {
+      //       await createAppointment(updatedValues);
+      //       update();
+      //       setSuccess("Turno agendado exitosamente");
+      //       toast({
+      //         title: "Turno agendado",
+      //         description: `El día ${selectedDate}`,
+      //       });
+      //     } else {
+      //       setTimeout(checkPaymentStatus, 1000);
+      //     }
+      //   } catch (error) {
+      //     console.error("Error al verificar el estado del pago:", error);
+      //     setError("Something went wrong while verifying payment status");
+      //   }
+      // };
+      // checkPaymentStatus();
     } catch (error) {
       console.error("Error durante el pago:", error);
       setError("Something went wrong during payment");
