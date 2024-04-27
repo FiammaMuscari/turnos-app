@@ -53,16 +53,6 @@ const ClientPage: React.FC = () => {
     );
     setTotalPrice(total);
   }, [selectedServices]);
-  
-  // url search params
-  
-  useEffect(() => {
-    const queryParams = new URLSearchParams(window.location.search);
-    const collectionStatus = queryParams.get("collection_status");
-
-    if (collectionStatus === "approved") {
-      console.log("El estado de la colección es 'approved'");
-    }
 
   const handleDateSelection = (date: string | undefined) => {
     if (date) {
@@ -161,9 +151,18 @@ const ClientPage: React.FC = () => {
     setSelectedTime(time);
   };
 
+  //useparam
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const collectionStatus = queryParams.get("collection_status");
 
-
-
+    if (collectionStatus === "approved") {
+      console.log(
+        "El estado de la colección es 'approved' and result:",
+        collectionStatus
+      );
+    }
+  }, []);
 
   return (
     <>
