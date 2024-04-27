@@ -27,7 +27,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { getUnavailableTimes } from "@/actions/appointments";
 import { payment } from "@/actions/payment";
 import { MercadoPagoConfig, Preference } from "mercadopago";
-import { redirect } from "next/navigation";
+import { redirect, useSearchParams } from "next/navigation";
 interface Service {
   id: string;
   name: string;
@@ -53,6 +53,16 @@ const ClientPage: React.FC = () => {
     );
     setTotalPrice(total);
   }, [selectedServices]);
+  
+  // url search params
+  
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const collectionStatus = queryParams.get("collection_status");
+
+    if (collectionStatus === "approved") {
+      console.log("El estado de la colección es 'approved'");
+    }
 
   const handleDateSelection = (date: string | undefined) => {
     if (date) {
@@ -150,6 +160,10 @@ const ClientPage: React.FC = () => {
   const handleTimeSelection = (time: string) => {
     setSelectedTime(time);
   };
+
+
+
+
 
   return (
     <>
