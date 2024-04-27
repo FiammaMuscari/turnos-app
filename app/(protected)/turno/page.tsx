@@ -108,19 +108,6 @@ const ClientPage: React.FC = () => {
 
       const checkPaymentStatus = async () => {
         try {
-          const updatedValues = {
-            ...values,
-            date: selectedDate || "",
-            time: selectedTime || "",
-            services: selectedServices.map((service) => service.name),
-          };
-          await createAppointment(updatedValues);
-          update();
-          setSuccess("Turno agendado exitosamente");
-          toast({
-            title: "Turno agendado",
-            description: `El día ${selectedDate}`,
-          });
         } catch (error) {
           console.error("Error al verificar el estado del pago:", error);
           setError("Something went wrong while verifying payment status");
@@ -151,18 +138,47 @@ const ClientPage: React.FC = () => {
     setSelectedTime(time);
   };
 
-  //useparam
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
     const collectionStatus = queryParams.get("collection_status");
 
     if (collectionStatus === "approved") {
-      console.log(
-        "El estado de la colección es 'approved' and result:",
-        collectionStatus
+      console.log("El estado de la colección es 'approved'");
+
+      const scheduleAppointment = async (
+        values: z.infer<typeof AppointmentSchema>,
+        selectedDate: string | null,
+        selectedTime: string | null,
+        selectedServices: Service[]
+      ) => {
+        try {
+          const updatedValues = {
+            ...values,
+            date: selectedDate || "",
+            time: selectedTime || "",
+            services: selectedServices.map((service) => service.name),
+          };
+          await createAppointment(updatedValues);
+          update();
+          setSuccess("Turno agendado exitosamente");
+          toast({
+            title: "Turno agendado",
+            description: `El día ${selectedDate}`,
+          });
+        } catch (error) {
+          console.error("Error al agendar el turno:", error);
+          setError("Hubo un error al agendar el turno");
+        }
+      };
+
+      scheduleAppointment(
+        form.getValues(),
+        selectedDate,
+        selectedTime,
+        selectedServices
       );
     }
-  }, []);
+  }, [form, selectedDate, selectedServices, selectedTime, toast, update]);
 
   return (
     <>
