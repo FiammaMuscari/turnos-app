@@ -24,6 +24,6 @@ export async function payment(totalPrice: number) {
       auto_return: "approved",
     },
   });
-
+  console.log("esto FIAMMA:", preference.notification_url);
   return preference.sandbox_init_point!;
 }
